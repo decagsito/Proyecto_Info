@@ -21,3 +21,5 @@ class ControladorLogin:
         else:
             from PyQt5.QtWidgets import QMessageBox
             QMessageBox.critical(self.login_ui, "Error", "Usuario o contraseña incorrectos")
+
+    
