@@ -96,18 +96,22 @@ class VisorMatUI(QWidget):
             ax = self.canvas.figure.add_subplot(111)
 
             n_canales = self.array_actual.shape[0]
-            desplazamiento = np.max(np.abs(self.array_actual)) * 1.2  # espacio entre señales
+            n_muestras = self.array_actual.shape[1]
+
+            # Determinar espacio vertical entre señales
+            amplitud_max = np.max(np.abs(self.array_actual))
+            espacio = amplitud_max * 2  # más separación visual
 
             for i in range(n_canales):
-                offset = i * desplazamiento
+                offset = (n_canales - i - 1) * espacio  # para que canal 0 quede arriba
                 ax.plot(self.array_actual[i] + offset, label=f"Canal {i}")
 
-            ax.set_title("Señales apiladas verticalmente")
-            ax.set_xlabel("Tiempo")
-            ax.set_ylabel("Canales desplazados")
-            ax.set_yticks([i * desplazamiento for i in range(n_canales)])
+            ax.set_title("Señales apiladas (una arriba de otra)")
+            ax.set_xlabel("Tiempo (muestras)")
+            ax.set_yticks([i * espacio for i in reversed(range(n_canales))])
             ax.set_yticklabels([f"Canal {i}" for i in range(n_canales)])
-            ax.invert_yaxis()  # opcional: del canal 0 arriba al último abajo
+            ax.set_ylim(-espacio, n_canales * espacio)
+            ax.set_xlim(0, n_muestras)
             self.canvas.figure.tight_layout()
             self.canvas.draw()
 
@@ -140,13 +144,15 @@ class VisorMatUI(QWidget):
         if self.array_actual is None:
             return
 
-        promedio = np.mean(self.array_actual, axis=1)  # promedio por canal
-        x = np.arange(len(promedio))  # eje X: 0 a N-1
+        promedio = np.mean(self.array_actual, axis=1)  # o axis=0 si prefieres
+        promedio = np.asarray(promedio).flatten()  # asegura que es 1D array
+
+        x = np.arange(len(promedio))
 
         self.canvas.figure.clf()
         ax = self.canvas.figure.add_subplot(111)
         ax.stem(x, promedio, use_line_collection=True)
         ax.set_title("Promedio a lo largo del eje 1")
-        ax.set_xlabel("Canal")
+        ax.set_xlabel("Canal" if promedio.shape[0] == self.array_actual.shape[0] else "Tiempo")
         ax.set_ylabel("Promedio")
         self.canvas.draw()
