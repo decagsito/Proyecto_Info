@@ -21,6 +21,11 @@ class MenuImagenUI(QWidget):
         btn_jpg_png.clicked.connect(self.procesar_jpg_png)  # Temporal
         layout.addWidget(btn_jpg_png)
 
+        # botón para ver historial
+        btn_historial = QPushButton("Ver historial de archivos")
+        btn_historial.clicked.connect(self.abrir_historial)
+        layout.addWidget(btn_historial)
+
         # Botón para salir (cerrar ventana o volver al login)
         btn_salir = QPushButton("Cerrar sesión")
         btn_salir.clicked.connect(self.close)
@@ -28,10 +33,6 @@ class MenuImagenUI(QWidget):
 
         self.setLayout(layout)
 
-        # botón para ver historial
-        btn_historial = QPushButton("Ver historial de archivos")
-        btn_historial.clicked.connect(self.abrir_historial)
-        layout.addWidget(btn_historial)
 
     def abrir_visor(self):
         self.visor = VisorMedicoUI()
