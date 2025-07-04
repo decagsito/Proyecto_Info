@@ -6,6 +6,7 @@ from modelo import base_datos
 if __name__ == '__main__':
     base_datos.crear_tabla_usuarios()
     base_datos.crear_tabla_imagenes()
+    base_datos.crear_tabla_archivos()
 
     # Puedes insertar usuarios para prueba aquí
     base_datos.insertar_usuario("julian", "1234", "imagen")

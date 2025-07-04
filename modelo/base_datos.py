@@ -65,3 +65,45 @@ def registrar_conversion_dicom_a_nifti(ruta_dicom, ruta_nifti):
     ''', ('DICOM/NIfTI', ruta_dicom, ruta_nifti, fecha))
     conn.commit()
     conn.close()
+
+def crear_tabla_archivos():
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS archivos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            tipo TEXT,
+            nombre_archivo TEXT,
+            fecha TEXT,
+            ruta TEXT
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+def registrar_archivo(tipo, nombre_archivo, ruta):
+    conn = conectar()
+    cursor = conn.cursor()
+    fecha = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    cursor.execute('''
+        INSERT INTO archivos (tipo, nombre_archivo, fecha, ruta)
+        VALUES (?, ?, ?, ?)
+    ''', (tipo, nombre_archivo, fecha, ruta))
+    conn.commit()
+    conn.close()
+
+def obtener_dicom_nifti():
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("SELECT tipo, ruta_dicom, ruta_nifti, fecha FROM imagenes_medicas")
+    datos = cursor.fetchall()
+    conn.close()
+    return datos
+
+def obtener_archivos():
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("SELECT tipo, nombre_archivo, ruta, fecha FROM archivos")
+    datos = cursor.fetchall()
+    conn.close()
+    return datos

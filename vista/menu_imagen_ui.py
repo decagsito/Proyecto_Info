@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel
 from vista.visor_medico_ui import VisorMedicoUI
 from vista.procesador_jpg_ui import ProcesadorJPGUI
+from vista.historial_ui import HistorialUI
 
 class MenuImagenUI(QWidget):
     def __init__(self):
@@ -27,6 +28,11 @@ class MenuImagenUI(QWidget):
 
         self.setLayout(layout)
 
+        # botón para ver historial
+        btn_historial = QPushButton("Ver historial de archivos")
+        btn_historial.clicked.connect(self.abrir_historial)
+        layout.addWidget(btn_historial)
+
     def abrir_visor(self):
         self.visor = VisorMedicoUI()
         self.visor.show()
@@ -34,3 +40,7 @@ class MenuImagenUI(QWidget):
     def procesar_jpg_png(self):
         self.proc = ProcesadorJPGUI()
         self.proc.show()
+
+    def abrir_historial(self):
+        self.historial = HistorialUI()
+        self.historial.show()

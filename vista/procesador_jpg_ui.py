@@ -7,6 +7,8 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
+import os
+from modelo import base_datos
 
 class ProcesadorJPGUI(QWidget):
     def __init__(self):
@@ -58,6 +60,11 @@ class ProcesadorJPGUI(QWidget):
             self.imagen_original = cv2.imread(ruta, cv2.IMREAD_COLOR)
             self.imagen_procesada = self.imagen_original.copy()
             self.mostrar_imagenes()
+
+            # Guardar en base de datos
+            tipo = os.path.splitext(ruta)[1].replace(".", "").lower()  # 'jpg' o 'png'
+            nombre = os.path.basename(ruta)
+            base_datos.registrar_archivo(tipo, nombre, ruta)
 
     def aplicar_proceso(self):
         if self.imagen_original is None:
