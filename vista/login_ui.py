@@ -16,13 +16,16 @@ class LoginUI(QWidget):
 
         self.boton_login = QPushButton("Ingresar")
         self.boton_login.clicked.connect(self.login)
-
+        self.boton_crear = QPushButton("Crear cuenta")
+        self.boton_crear.clicked.connect(self.abrir_registro)
+        
         layout = QVBoxLayout()
         layout.addWidget(self.label_user)
         layout.addWidget(self.input_user)
         layout.addWidget(self.label_pass)
         layout.addWidget(self.input_pass)
         layout.addWidget(self.boton_login)
+        layout.addWidget(self.boton_crear)
 
         self.setLayout(layout)
 
@@ -30,3 +33,8 @@ class LoginUI(QWidget):
         user = self.input_user.text()
         pw = self.input_pass.text()
         self.controlador.procesar_login(user, pw)
+
+    def abrir_registro(self):
+        from vista.registro_ui import RegistroUI
+        self.registro = RegistroUI()
+        self.registro.show()

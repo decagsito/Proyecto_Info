@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel
 from vista.visor_medico_ui import VisorMedicoUI
+from vista.procesador_jpg_ui import ProcesadorJPGUI
 
 class MenuImagenUI(QWidget):
     def __init__(self):
@@ -31,5 +32,5 @@ class MenuImagenUI(QWidget):
         self.visor.show()
 
     def procesar_jpg_png(self):
-        from PyQt5.QtWidgets import QMessageBox
-        QMessageBox.information(self, "Próximamente", "Este módulo se implementará luego.")
+        self.proc = ProcesadorJPGUI()
+        self.proc.show()

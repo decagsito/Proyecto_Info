@@ -25,9 +25,11 @@ def insertar_usuario(usuario, contrasena, rol):
         cursor.execute('INSERT INTO usuarios (usuario, contrasena, rol) VALUES (?, ?, ?)',
                        (usuario, contrasena, rol))
         conn.commit()
+        conn.close()
+        return True
     except sqlite3.IntegrityError:
-        print("Usuario ya existe.")
-    conn.close()
+        conn.close()
+        return False
 
 def validar_usuario(usuario, contrasena):
     conn = conectar()
