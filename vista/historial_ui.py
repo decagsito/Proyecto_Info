@@ -1,59 +1,120 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QPushButton, QTabWidget
+import os
+from PyQt5.QtWidgets import (
+    QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem,
+    QPushButton, QTabWidget, QHBoxLayout, QMessageBox
+)
 from modelo import base_datos
 
 class HistorialUI(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Historial de archivos procesados")
-        self.setGeometry(150, 150, 800, 500)
+        self.setGeometry(150, 150, 850, 500)
 
         layout = QVBoxLayout()
 
-        tabs = QTabWidget()
+        self.tabs = QTabWidget()
 
-        # Tab 1: Imágenes médicas
+        # === TAB DICOM / NIFTI ===
         self.tab_dicom = QWidget()
-        self.tab_dicom_layout = QVBoxLayout()
         self.tabla_dicom = QTableWidget()
-        self.tab_dicom_layout.addWidget(QLabel("DICOM / NIfTI"))
-        self.tab_dicom_layout.addWidget(self.tabla_dicom)
-        self.tab_dicom.setLayout(self.tab_dicom_layout)
+        dicom_layout = QVBoxLayout()
+        dicom_layout.addWidget(QLabel("Archivos DICOM / NIfTI"))
+        dicom_layout.addWidget(self.tabla_dicom)
 
-        # Tab 2: Otros archivos (jpg, png, mat, csv)
+        # Botones de acciones para DICOM
+        btns_dicom = QHBoxLayout()
+        btn_actualizar_dicom = QPushButton("Actualizar")
+        btn_abrir_dicom = QPushButton("Abrir archivo NIfTI")
+        btn_actualizar_dicom.clicked.connect(self.cargar_dicom)
+        btn_abrir_dicom.clicked.connect(self.abrir_dicom)
+        btns_dicom.addWidget(btn_actualizar_dicom)
+        btns_dicom.addWidget(btn_abrir_dicom)
+        dicom_layout.addLayout(btns_dicom)
+
+        self.tab_dicom.setLayout(dicom_layout)
+        self.tabs.addTab(self.tab_dicom, "Imágenes médicas")
+
+        # === TAB ARCHIVOS (jpg, png, mat, csv) ===
         self.tab_otros = QWidget()
-        self.tab_otros_layout = QVBoxLayout()
         self.tabla_otros = QTableWidget()
-        self.tab_otros_layout.addWidget(QLabel("JPG / PNG / MAT / CSV"))
-        self.tab_otros_layout.addWidget(self.tabla_otros)
-        self.tab_otros.setLayout(self.tab_otros_layout)
+        otros_layout = QVBoxLayout()
+        otros_layout.addWidget(QLabel("Archivos JPG / PNG / MAT / CSV"))
+        otros_layout.addWidget(self.tabla_otros)
 
-        tabs.addTab(self.tab_dicom, "Imágenes médicas")
-        tabs.addTab(self.tab_otros, "Otros archivos")
+        # Botones de acciones para otros archivos
+        btns_otros = QHBoxLayout()
+        btn_actualizar_otros = QPushButton("Actualizar")
+        btn_abrir_otros = QPushButton("Abrir archivo")
+        btn_actualizar_otros.clicked.connect(self.cargar_otros)
+        btn_abrir_otros.clicked.connect(self.abrir_otros)
+        btns_otros.addWidget(btn_actualizar_otros)
+        btns_otros.addWidget(btn_abrir_otros)
+        otros_layout.addLayout(btns_otros)
 
-        layout.addWidget(tabs)
+        self.tab_otros.setLayout(otros_layout)
+        self.tabs.addTab(self.tab_otros, "Otros archivos")
 
+        layout.addWidget(self.tabs)
+
+        # Botón cerrar
         btn_cerrar = QPushButton("Cerrar")
         btn_cerrar.clicked.connect(self.close)
         layout.addWidget(btn_cerrar)
 
         self.setLayout(layout)
-        self.cargar_datos()
 
-    def cargar_datos(self):
-        # Datos imágenes médicas
-        datos_dicom = base_datos.obtener_dicom_nifti()
+        # Cargar al inicio
+        self.cargar_dicom()
+        self.cargar_otros()
+
+    def cargar_dicom(self):
+        datos = base_datos.obtener_dicom_nifti()
+        self.tabla_dicom.setRowCount(len(datos))
         self.tabla_dicom.setColumnCount(4)
         self.tabla_dicom.setHorizontalHeaderLabels(["Tipo", "Ruta DICOM", "Ruta NIfTI", "Fecha"])
-        self.tabla_dicom.setRowCount(len(datos_dicom))
-        for i, fila in enumerate(datos_dicom):
+        for i, fila in enumerate(datos):
             for j, valor in enumerate(fila):
                 self.tabla_dicom.setItem(i, j, QTableWidgetItem(str(valor)))
+        self.tabla_dicom.resizeColumnsToContents()
 
-        # Datos otros archivos
-        datos_otros = base_datos.obtener_archivos()
+    def cargar_otros(self):
+        datos = base_datos.obtener_archivos()
+        self.tabla_otros.setRowCount(len(datos))
         self.tabla_otros.setColumnCount(4)
         self.tabla_otros.setHorizontalHeaderLabels(["Tipo", "Nombre", "Ruta", "Fecha"])
-        self.tabla_otros.setRowCount(len(datos_otros))
-        for i, fila in enumerate(datos_otros):
+        for i, fila in enumerate(datos):
             for j, valor in enumerate(fila):
                 self.tabla_otros.setItem(i, j, QTableWidgetItem(str(valor)))
+        self.tabla_otros.resizeColumnsToContents()
+
+    def abrir_dicom(self):
+        fila = self.tabla_dicom.currentRow()
+        if fila != -1:
+            ruta_nifti = self.tabla_dicom.item(fila, 2).text()
+            self.abrir_archivo(ruta_nifti)
+        else:
+            QMessageBox.warning(self, "Aviso", "Seleccione un archivo NIfTI para abrir.")
+
+    def abrir_otros(self):
+        fila = self.tabla_otros.currentRow()
+        if fila != -1:
+            ruta = self.tabla_otros.item(fila, 2).text()
+            self.abrir_archivo(ruta)
+        else:
+            QMessageBox.warning(self, "Aviso", "Seleccione un archivo para abrir.")
+
+    def abrir_archivo(self, ruta):
+        if os.path.exists(ruta):
+            try:
+                if os.name == 'nt':  # Windows
+                    os.startfile(ruta)
+                elif os.name == 'posix':  # Linux/Mac
+                    import subprocess
+                    subprocess.call(['xdg-open', ruta])
+                else:
+                    QMessageBox.warning(self, "Error", "Sistema operativo no compatible.")
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"No se pudo abrir el archivo:\n{e}")
+        else:
+            QMessageBox.warning(self, "Archivo no encontrado", "La ruta especificada no existe.")
