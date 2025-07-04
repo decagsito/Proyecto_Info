@@ -94,11 +94,21 @@ class VisorMatUI(QWidget):
         if self.array_actual is not None:
             self.canvas.figure.clf()
             ax = self.canvas.figure.add_subplot(111)
-            for canal in self.array_actual:
-                ax.plot(canal)
-            ax.set_title("Todas las señales")
+
+            n_canales = self.array_actual.shape[0]
+            desplazamiento = np.max(np.abs(self.array_actual)) * 1.2  # espacio entre señales
+
+            for i in range(n_canales):
+                offset = i * desplazamiento
+                ax.plot(self.array_actual[i] + offset, label=f"Canal {i}")
+
+            ax.set_title("Señales apiladas verticalmente")
             ax.set_xlabel("Tiempo")
-            ax.set_ylabel("Amplitud")
+            ax.set_ylabel("Canales desplazados")
+            ax.set_yticks([i * desplazamiento for i in range(n_canales)])
+            ax.set_yticklabels([f"Canal {i}" for i in range(n_canales)])
+            ax.invert_yaxis()  # opcional: del canal 0 arriba al último abajo
+            self.canvas.figure.tight_layout()
             self.canvas.draw()
 
     def graficar_segmento(self):
@@ -130,10 +140,12 @@ class VisorMatUI(QWidget):
         if self.array_actual is None:
             return
 
-        promedio = np.mean(self.array_actual, axis=1)
+        promedio = np.mean(self.array_actual, axis=1)  # promedio por canal
+        x = np.arange(len(promedio))  # eje X
+
         self.canvas.figure.clf()
         ax = self.canvas.figure.add_subplot(111)
-        ax.stem(promedio, use_line_collection=True)
+        ax.stem(x, promedio, use_line_collection=True)
         ax.set_title("Promedio a lo largo del eje 1")
         ax.set_xlabel("Canal")
         ax.set_ylabel("Promedio")
