@@ -141,7 +141,7 @@ class VisorMatUI(QWidget):
             return
 
         promedio = np.mean(self.array_actual, axis=1)  # promedio por canal
-        x = np.arange(len(promedio))  # eje X
+        x = np.arange(len(promedio))  # eje X: 0 a N-1
 
         self.canvas.figure.clf()
         ax = self.canvas.figure.add_subplot(111)
