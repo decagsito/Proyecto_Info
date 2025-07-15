@@ -1,9 +1,5 @@
 
 QWidget {
-    background-image: url("vista/recursos/fondo_menu.jpg");  /* Ruta de imagen personalizada */
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
     font-family: 'Times New Roman';
     font-size: 15px;
 }
