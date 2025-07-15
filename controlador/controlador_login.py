@@ -23,3 +23,5 @@ class ControladorLogin:
             QMessageBox.critical(self.login_ui, "Error", "Usuario o contraseña incorrectos")
 
     
+
+    

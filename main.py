@@ -13,5 +13,9 @@ if __name__ == '__main__':
     base_datos.insertar_usuario("david", "5678", "senal")
 
     app = QApplication([])
+
+    # Estilo global
+    with open("vista/estilos.qss", "r") as f:
+        app.setStyleSheet(f.read())
     login = ControladorLogin()
     app.exec_()
