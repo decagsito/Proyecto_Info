@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from PyQt5.QtWidgets import (
     QWidget, QLabel, QVBoxLayout, QPushButton, QHBoxLayout,
-    QFileDialog, QComboBox, QSlider, QSpinBox
+    QFileDialog, QComboBox, QSlider, QSpinBox, QMessageBox
 )
 from PyQt5.QtCore import Qt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -125,3 +125,11 @@ class ProcesadorJPGUI(QWidget):
         ax2.axis('off')
 
         self.canvas.draw()
+
+    def cargar_imagen_desde_ruta(self, ruta):
+        try:
+            from PyQt5.QtGui import QPixmap
+            self.label_imagen.setPixmap(QPixmap(ruta).scaled(
+                self.label_imagen.size(), aspectRatioMode=True))
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"No se pudo cargar la imagen:\n{e}")

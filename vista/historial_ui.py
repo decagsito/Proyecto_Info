@@ -105,16 +105,38 @@ class HistorialUI(QWidget):
             QMessageBox.warning(self, "Aviso", "Seleccione un archivo para abrir.")
 
     def abrir_archivo(self, ruta):
-        if os.path.exists(ruta):
-            try:
-                if os.name == 'nt':  # Windows
-                    os.startfile(ruta)
-                elif os.name == 'posix':  # Linux/Mac
-                    import subprocess
-                    subprocess.call(['xdg-open', ruta])
-                else:
-                    QMessageBox.warning(self, "Error", "Sistema operativo no compatible.")
-            except Exception as e:
-                QMessageBox.critical(self, "Error", f"No se pudo abrir el archivo:\n{e}")
-        else:
+        if not os.path.exists(ruta):
             QMessageBox.warning(self, "Archivo no encontrado", "La ruta especificada no existe.")
+            return
+
+        extension = os.path.splitext(ruta)[1].lower()
+
+        try:
+            if extension == ".mat":
+                from vista.visor_mat_ui import VisorMatUI
+                visor = VisorMatUI()
+                visor.show()
+                visor.cargar_mat_desde_ruta(ruta)
+
+            elif extension == ".csv":
+                from vista.visor_csv_ui import VisorCSVUI
+                visor = VisorCSVUI()
+                visor.show()
+                visor.cargar_csv_desde_ruta(ruta)
+
+            elif extension in [".jpg", ".png"]:
+                from vista.procesador_jpg_ui import ProcesadorImagenUI
+                visor = ProcesadorImagenUI()
+                visor.show()
+                visor.cargar_imagen_desde_ruta(ruta)
+
+            else:
+                # como fallback abrir en el sistema
+                if os.name == 'nt':
+                    os.startfile(ruta)
+                else:
+                    import subprocess
+                    subprocess.Popen(['xdg-open', ruta])
+
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"No se pudo abrir el archivo:\n{e}")

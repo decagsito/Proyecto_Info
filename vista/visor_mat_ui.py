@@ -103,10 +103,12 @@ class VisorMatUI(QWidget):
             espacio = amplitud_max * 2  # más separación visual
 
             for i in range(n_canales):
-                offset = (n_canales - i - 1) * espacio  # para que canal 0 quede arriba
-                ax.plot(self.array_actual[i] + offset, label=f"Canal {i}")
+                offset = (n_canales - i - 1) * espacio  # dentro del for
+                if i < self.array_actual.shape[0]:
+                    canal = np.asarray(self.array_actual[i]).flatten()
+                    ax.plot(canal + offset, label=f"Canal {i}")
 
-            ax.set_title("Señales apiladas (una arriba de otra)")
+            ax.set_title("Señales del archivo")
             ax.set_xlabel("Tiempo (muestras)")
             ax.set_yticks([i * espacio for i in reversed(range(n_canales))])
             ax.set_yticklabels([f"Canal {i}" for i in range(n_canales)])
@@ -128,14 +130,21 @@ class VisorMatUI(QWidget):
             self.canvas.figure.clf()
             ax = self.canvas.figure.add_subplot(111)
 
-            for canal in range(i, f + 1):
-                if canal < self.array_actual.shape[0]:
-                    ax.plot(self.array_actual[canal, t0:t1], label=f"Canal {canal}")
+            n_canales = f - i + 1
+            amplitud_max = np.max(np.abs(self.array_actual[i:f+1, t0:t1]))
+            espacio = amplitud_max * 2
 
-            ax.set_title("Segmento de canales")
+            for j, canal in enumerate(range(i, f + 1)):
+                if canal < self.array_actual.shape[0]:
+                    offset = (n_canales - j - 1) * espacio
+                    señal = np.asarray(self.array_actual[canal, t0:t1]).flatten()
+                    ax.plot(señal + offset, label=f"Canal {canal}")
+
+            ax.set_title("Segmento de canales apilados")
             ax.set_xlabel("Tiempo")
-            ax.set_ylabel("Amplitud")
-            ax.legend()
+            ax.set_yticks([j * espacio for j in reversed(range(n_canales))])
+            ax.set_yticklabels([f"Canal {c}" for c in range(i, f + 1)])
+            self.canvas.figure.tight_layout()
             self.canvas.draw()
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Datos inválidos: {e}")
@@ -151,8 +160,20 @@ class VisorMatUI(QWidget):
 
         self.canvas.figure.clf()
         ax = self.canvas.figure.add_subplot(111)
-        ax.stem(x, promedio, use_line_collection=True)
+        ax.stem(x, promedio)
         ax.set_title("Promedio a lo largo del eje 1")
         ax.set_xlabel("Canal" if promedio.shape[0] == self.array_actual.shape[0] else "Tiempo")
         ax.set_ylabel("Promedio")
         self.canvas.draw()
+
+    def cargar_mat_desde_ruta(self, ruta):
+        try:
+            self.datos = scipy.io.loadmat(ruta)
+            llaves = [k for k in self.datos.keys() if not k.startswith("__")]
+            self.combo_llaves.clear()
+            self.combo_llaves.addItems(llaves)
+            if llaves:
+                self.combo_llaves.setCurrentIndex(0)
+                self.verificar_llave()
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"No se pudo cargar el archivo .mat:\n{e}")

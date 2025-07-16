@@ -92,3 +92,24 @@ class VisorCSVUI(QWidget):
             self.canvas.draw()
         except Exception as e:
             QMessageBox.critical(self, "Error", f"No se pudo graficar: {e}")
+
+    def cargar_csv_desde_ruta(self, ruta):
+        try:
+            import pandas as pd
+            self.df = pd.read_csv(ruta)
+            self.tabla.setRowCount(0)
+            self.tabla.setColumnCount(len(self.df.columns))
+            self.tabla.setHorizontalHeaderLabels(self.df.columns)
+
+            for i, fila in self.df.iterrows():
+                self.tabla.insertRow(i)
+                for j, valor in enumerate(fila):
+                    self.tabla.setItem(i, j, QTableWidgetItem(str(valor)))
+
+            self.combo_x.clear()
+            self.combo_y.clear()
+            self.combo_x.addItems(self.df.columns)
+            self.combo_y.addItems(self.df.columns)
+
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"No se pudo cargar el archivo CSV:\n{e}")
