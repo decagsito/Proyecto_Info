@@ -1,3 +1,5 @@
+# David Garcia, Julian Vargas, Miguel Iglesia, evellyn Velasquez
+
 from PyQt5.QtWidgets import QApplication
 from modelo import base_datos
 from controlador.controlador_login import ControladorLogin
