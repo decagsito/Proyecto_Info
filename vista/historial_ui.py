@@ -4,12 +4,17 @@ from PyQt5.QtWidgets import (
     QPushButton, QTabWidget, QHBoxLayout, QMessageBox
 )
 from modelo import base_datos
+from vista.visor_mat_ui import VisorMatUI
+from vista.visor_csv_ui import VisorCSVUI
+from vista.procesador_jpg_ui import ProcesadorJPGUI
+from vista.visor_medico_ui import VisorMedicoUI
 
 class HistorialUI(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Historial de archivos procesados")
         self.setGeometry(150, 150, 850, 500)
+        self.ventana_activa = None
 
         layout = QVBoxLayout()
 
@@ -112,29 +117,25 @@ class HistorialUI(QWidget):
         extension = os.path.splitext(ruta)[1].lower()
 
         try:
-            if extension == ".mat":
-                from vista.visor_mat_ui import VisorMatUI
-                visor = VisorMatUI()
-                visor.show()
-                visor.cargar_mat_desde_ruta(ruta)
+            if extension == ".mat":                
+                self.ventana_activa = VisorMatUI()
+                self.ventana_activa.show()
+                self.ventana_activa.cargar_mat_desde_ruta(ruta)
 
-            elif extension == ".csv":
-                from vista.visor_csv_ui import VisorCSVUI
-                visor = VisorCSVUI()
-                visor.show()
-                visor.cargar_csv_desde_ruta(ruta)
+            elif extension == ".csv":                
+                self.ventana_activa = VisorCSVUI()
+                self.ventana_activa.show()
+                self.ventana_activa.cargar_csv_desde_ruta(ruta)
 
-            elif extension in [".jpg", ".png"]:
-                from vista.procesador_jpg_ui import ProcesadorImagenUI
-                visor = ProcesadorImagenUI()
-                visor.show()
-                visor.cargar_imagen_desde_ruta(ruta)
+            elif extension in [".jpg", ".png"]:                
+                self.ventana_activa = ProcesadorJPGUI()
+                self.ventana_activa.show()
+                self.ventana_activa.cargar_imagen_desde_ruta(ruta)
 
             elif extension == ".dcm":
-                from vista.visor_medico_ui import VisorMedicoUI
-                visor = VisorMedicoUI()
-                visor.show()
-                visor.cargar_dicom_desde_ruta(ruta)
+                self.ventana_activa = VisorMedicoUI()
+                self.ventana_activa.show()
+                self.ventana_activa.cargar_dicom_desde_ruta(ruta)
 
             else:
                 # como fallback abrir en el sistema
