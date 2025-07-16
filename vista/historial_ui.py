@@ -130,6 +130,12 @@ class HistorialUI(QWidget):
                 visor.show()
                 visor.cargar_imagen_desde_ruta(ruta)
 
+            elif extension == ".dcm":
+                from vista.visor_medico_ui import VisorMedicoUI
+                visor = VisorMedicoUI()
+                visor.show()
+                visor.cargar_dicom_desde_ruta(ruta)
+
             else:
                 # como fallback abrir en el sistema
                 if os.name == 'nt':
