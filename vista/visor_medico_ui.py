@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QPushButton, QFileDialog, QSlider, QLabel, QHBoxLayout
+    QWidget, QVBoxLayout, QPushButton, QFileDialog, QSlider, QLabel, QHBoxLayout, QMessageBox
 )
 from PyQt5.QtCore import Qt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -93,3 +93,20 @@ class VisorMedicoUI(QWidget):
                 base_datos.registrar_conversion_dicom_a_nifti(carpeta, nifti_path)
                 from PyQt5.QtWidgets import QMessageBox
                 QMessageBox.information(self, "Éxito", "Conversión y guardado exitosos.")
+
+    def cargar_dicom_desde_ruta(self, ruta):
+        try:
+            import pydicom
+            import numpy as np
+
+            ds = pydicom.dcmread(ruta)
+            self.imagen = ds.pixel_array.astype(np.float32)
+
+            # Normaliza a 0–255 para visualizar
+            self.imagen = 255 * (self.imagen - np.min(self.imagen)) / (np.max(self.imagen) - np.min(self.imagen))
+            self.imagen = self.imagen.astype(np.uint8)
+
+            self.actualizar_imagen()  # Asume que tienes este método que muestra self.imagen
+            self.label_info.setText(f"Tamaño: {self.imagen.shape} - Modalidad: {ds.Modality}")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"No se pudo cargar el archivo DICOM:\n{e}")
