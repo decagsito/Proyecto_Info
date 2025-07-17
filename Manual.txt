@@ -1,0 +1,94 @@
+Manual de Usuario - BioAnalyser 2025
+
+1. Introducción
+
+BioAnalyser es una aplicación creada en Python con interfaz gráfica PyQt5, diseñada para cargar, visualizar y procesar distintos tipos de archivos biomédicos, como DICOM, NIfTI, JPG/PNG, CSV y archivos .mat. Permite gestionar el historial de archivos y explorar los datos con herramientas interactivas.
+
+2. Requisitos
+
+Python 3.8 o superior
+
+Librerías requeridas en requirements.txt
+
+Sistema operativo Windows (recomendado)
+
+3. Inicio de sesión y registro
+
+Al ejecutar main.py, se abrirá la ventana de login.
+
+Si no tiene una cuenta, puede crear una desde el botón "Crear nuevo usuario".
+
+Ingrese con su usuario y contraseña registrados.
+
+4. Menú principal
+
+Una vez dentro, se accede al menú principal, desde donde se puede:
+
+Cargar archivos
+
+Visualizar historial
+
+Procesar señales, imágenes o volumen médico
+
+Salir de la aplicación
+
+5. Visualizadores
+
+5.1 Visualizador DICOM/NIfTI
+
+Desde el menú "Visor Médico" puede cargar:
+
+Carpetas con archivos .dcm
+
+Archivos .nii o .nii.gz
+
+Se muestran tres vistas (axial, coronal, sagital) del volumen 3D
+
+Use los sliders para recorrer cada corte
+
+También puede convertir DICOM a NIfTI
+
+Compatible con carga desde historial
+
+5.2 Visualizador de Imágenes (JPG/PNG)
+
+Carga imágenes 2D
+
+Permite aplicar filtros, ver estadísticas, y guardar la imagen modificada
+
+5.3 Visualizador de Archivos .mat
+
+Carga archivos con señales
+
+Muestra las señales separadas por canal
+
+Permite graficar segmentos y calcular promedio
+
+5.4 Visualizador de CSV
+
+Muestra los datos en una tabla ampliada
+
+Permite navegar por filas y columnas
+
+6. Historial de archivos
+
+Registra todos los archivos cargados por el usuario
+
+Puede volver a abrir cualquier archivo haciendo clic en "Abrir"
+
+El visor correspondiente se abrirá automáticamente
+
+7. Seguridad y usuarios
+
+Cada usuario tiene su propio historial
+
+Contraseñas protegidas y no visibles
+
+8. Errores comunes
+
+Si un archivo no se abre, verifique su extensión y formato
+
+Asegúrese de tener los permisos necesarios para acceder a la carpeta
+
+9. Contacto
+Para soporte técnico, contacte a los desarrolladores del curso de Informática II 2025.
